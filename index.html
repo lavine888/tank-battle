@@ -26,7 +26,7 @@ h1 { color: #e44; text-align: center; margin-bottom: 8px; letter-spacing: 4px; }
   <span>得分: <b id="score">0</b></span>
   <span>敌人: <b id="enemies">5</b></span>
 </div>
-<canvas id="game" width="780" height="600"></canvas>
+<canvas id="game" width="780" height="600" tabindex="0"></canvas>
 <div id="controls">方向键/WASD 移动 | 空格/鼠标 射击 | P 暂停 | R 重新开始</div>
 
 <script>
@@ -183,7 +183,7 @@ class Tank {
 
 function initGame() {
   walls=levelMap.map(r=>[...r]);
-  player=new Tank(TILE*12.5,TILE*18.5,0,'#4a4',true);
+  player=new Tank(TILE*12.5,TILE*17,0,'#4a4',true);
   enemies=[];
   bullets=[];
   particles=[];
@@ -353,7 +353,7 @@ function drawPowerups() {
 
 function respawnPlayer() {
   if(lives<=0){gameOver=true;return;}
-  player=new Tank(TILE*12.5,TILE*18.5,0,'#4a4',true);
+  player=new Tank(TILE*12.5,TILE*17,0,'#4a4',true);
   // Grant brief invincibility
   player.invincible=90;
 }
@@ -491,8 +491,11 @@ function gameLoop() {
 // Input
 document.addEventListener('keydown',e=>{
   keys[e.code]=true;
-  if(e.code==='Space'){
+  const gameKeys=['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD','KeyP','KeyR'];
+  if(gameKeys.includes(e.code)){
     e.preventDefault();
+  }
+  if(e.code==='Space'){
     if(player.alive&&!gameOver&&!paused){
       const b=player.shoot();
       if(b) bullets.push(b);
@@ -502,9 +505,13 @@ document.addEventListener('keydown',e=>{
   if(e.code==='KeyR') initGame();
 });
 
+canvas.focus();
+
 document.addEventListener('keyup',e=>{ keys[e.code]=false; });
 
 canvas.addEventListener('click',e=>{
+  canvas.focus();
+
   if(gameOver||paused||!player.alive) return;
   const b=player.shoot();
   if(b) bullets.push(b);
